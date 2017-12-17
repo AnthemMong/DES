@@ -13,6 +13,6 @@
 ## usage
     1,download or clone the project
     2,enter the dirctory and just type "make", that will produce a a.out
-    3 run a.out
+    3,run a.out
 ## instrctions
     this program just a element, if you want to use it to encrypt file, you can modify it 
