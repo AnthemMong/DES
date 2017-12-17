@@ -10,8 +10,7 @@ extern const uint8_t ex_table[];
 extern const uint8_t p[];
 extern const uint8_t com_table[];
 extern const uint8_t key_table[];
-extern const uint8_t de_step_table[];
-extern const uint8_t en_step_table[];
+extern const uint8_t step_table[];
 extern const uint8_t end_table[];
 extern const uint8_t s[32][16];
 
@@ -19,8 +18,14 @@ extern const uint8_t s[32][16];
 int long_oxr(uint8_t* arg1, uint8_t* arg2, int len, uint8_t* result);
 int s_replace(uint8_t* message_block, uint8_t* new_block);
 int p_perm(uint8_t* message_block, uint8_t* new_block);
+int bit_exchange(uint8_t*arg, int opos, int npos, uint8_t* result);
+int init_perm(uint8_t* message_block, uint8_t* new_block);
+int ex_perm(uint8_t* message_block, uint8_t* new_block);
+int f_function(uint8_t* right_message, uint8_t* ki, uint8_t* result);
+int left_shift(uint8_t* arg, int len, int step);
+int create_subkey(uint8_t* key, const uint8_t* shift_table, uint8_t subkeys[16][6]);
 
-
+//encryption
 int en_des(uint8_t* message, uint8_t* key, uint8_t* ciphertext)
 {
     uint8_t subkeys[16][6], right[4], left[4], right_tmp[4], end_tmp[4], message_tmp[8];
@@ -32,7 +37,7 @@ int en_des(uint8_t* message, uint8_t* key, uint8_t* ciphertext)
     memcpy(left, message_tmp, 4);
     memcpy(right, message_tmp + 4, 4);
     
-    create_subkey(key, en_step_table, subkeys);
+    create_subkey(key, step_table, subkeys);
 
     for (i = 0; i < 16; i++)
     {
@@ -48,7 +53,7 @@ int en_des(uint8_t* message, uint8_t* key, uint8_t* ciphertext)
         bit_exchange(end_tmp, i + 1, end_table[i], ciphertext);
     return 0;
 }
-
+//deciphering
 int de_des(uint8_t* message, uint8_t* key, uint8_t* ciphertext)
 {
     uint8_t subkeys[16][6], right[4], left[4], right_tmp[4], end_tmp[4], ciphertext_tmp[8];
@@ -60,7 +65,7 @@ int de_des(uint8_t* message, uint8_t* key, uint8_t* ciphertext)
     memcpy(left, ciphertext_tmp, 4);
     memcpy(right, ciphertext_tmp + 4, 4);
     
-    create_subkey(key, en_step_table, subkeys);
+    create_subkey(key, step_table, subkeys);
 
     for (i = 0, k = 15; i < 16; i++, k--)
     {
@@ -76,7 +81,7 @@ int de_des(uint8_t* message, uint8_t* key, uint8_t* ciphertext)
         bit_exchange(end_tmp, i + 1, end_table[i], message);
     return 0;
 }
-
+//f function
 int f_function(uint8_t* right_message, uint8_t* ki, uint8_t* result)//checked
 {
     uint8_t right_message_tmp[4], xor_tmp[6], p_perm_tmp[4];
@@ -88,27 +93,22 @@ int f_function(uint8_t* right_message, uint8_t* ki, uint8_t* result)//checked
     p_perm(p_perm_tmp, result);
     return 1;
 }
-
-int create_subkey(uint8_t* key, const uint8_t* shift_table, uint8_t subkeys[16][6])//checked
+//create subkeys
+int create_subkey(uint8_t* key, const uint8_t* shift_table, uint8_t subkeys[16][6])
 {
     int i, j, step, head_tmp, mid_tmp;
     uint8_t key_tmp[8], cm_key[7], cm_key_tmp[7];
 
     memcpy(key_tmp, key, 8);
+
     memset(cm_key, 0, 7);
     for (i = 0; i < 56; i++)
-        bit_exchange(key_tmp, i + 1, key_table[i], cm_key);//checked
+        bit_exchange(key_tmp, i + 1, key_table[i], cm_key);
 
+    //cyclic shift   
     for (i = 0; i < 16; i++)
     {
         step = shift_table[i];
-        if (step == 0)
-        {
-            memset(subkeys[i], 0 , 6);
-            for (j = 0; j < 48; j++)
-                bit_exchange(cm_key_tmp, j + 1,  com_table[j], subkeys[i]);
-            continue;
-        }
 
         memcpy(cm_key_tmp, cm_key, 7);
         left_shift(cm_key_tmp, 7, step);
@@ -174,7 +174,8 @@ int create_subkey(uint8_t* key, const uint8_t* shift_table, uint8_t subkeys[16][
     return 1;
 }
 
-int s_replace(uint8_t* message_block, uint8_t* new_block)//checked
+//S-box replacing
+int s_replace(uint8_t* message_block, uint8_t* new_block)
 {
     int row[8], col[8];
     uint8_t ch, message_tmp[6];
@@ -202,7 +203,7 @@ int s_replace(uint8_t* message_block, uint8_t* new_block)//checked
     return 1;
 }
 
-int left_shift(uint8_t* arg, int len, int step)//checked
+int left_shift(uint8_t* arg, int len, int step)
 {
     uint8_t hmask, nmask, bit_tmp;
     int i;
