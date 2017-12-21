@@ -1,5 +1,5 @@
 # DES
-## License
+## license
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -12,7 +12,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ## usage
     1,download or clone the project
-    2,enter the dirctory and just type "make", that will produce a a.out
+    2,enter the dirctory and just type "make", that will produce a.out
     3,run a.out
 ## instrctions
-    this program just a element, if you want to use it to encrypt file, you can modify it 
+    This program just a simple one, you can modify it whatever you want.
+    if the program has some problem or you have questions, you can contact
+    me at AnthemMong@gmail.com
