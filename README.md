@@ -14,7 +14,7 @@
     1,download or clone the project
     2,enter the dirctory and just type "make", that will produce a.out
     3,run a.out
-## instrctions
+## instruction
     This program just a simple one, you can modify it whatever you want.
     if the program has some problem or you have questions, you can contact
     me at AnthemMong@gmail.com
